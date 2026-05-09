@@ -31,10 +31,12 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    'abdulrahm296-8000.theianext-0-labs-prod-misc-tools-us-east-0.proxy.cognitiveclass.ai'
+    'abdulrahm296-8000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai',
+    '.proxy.cognitiveclass.ai' # إضافة هذا النطاق العام يضمن عمل أي رابط فرعي للمختبر
 ]
 CSRF_TRUSTED_ORIGINS = [
-    'https://abdulrahm296-8000.theianext-0-labs-prod-misc-tools-us-east-0.proxy.cognitiveclass.ai'
+    'https://abdulrahm296-8000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai',
+    'https://*.proxy.cognitiveclass.ai'
 ]
 
 REST_FRAMEWORK = {
