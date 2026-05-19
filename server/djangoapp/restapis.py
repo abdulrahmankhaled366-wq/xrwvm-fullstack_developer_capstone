@@ -4,18 +4,21 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-backend_url = os.getenv(
-    'backend_url', default="http://localhost:3030")
+# تم تثبيت الرابط المحلي هنا مباشرة لضمان الاتصال السريع وتخطي مشاكل البروكسي الخارجي
+backend_url = "http://localhost:3030"
 sentiment_analyzer_url = os.getenv(
     'sentiment_analyzer_url', default="http://localhost:5000/")
 
 def get_request(endpoint, **kwargs):
     params = ""
-    if(kwargs):
+    if kwargs:
         for key, value in kwargs.items():
-            params = params + key + "=" + value + "&"
-
-    request_url = backend_url + endpoint + "?" + params
+            params = params + key + "=" + str(value) + "&"
+        # نضع علامة الاستفهام فقط في حال وجود متغيرات فعلية مرسلة
+        request_url = backend_url + endpoint + "?" + params.rstrip('&')
+    else:
+        # إذا لم تكن هناك وسائط، نرسل الرابط نظيفاً تماماً بدون علامات زائدة
+        request_url = backend_url + endpoint
 
     print("GET from {} ".format(request_url))
     try:
@@ -27,7 +30,6 @@ def get_request(endpoint, **kwargs):
 def analyze_review_sentiments(text):
     request_url = sentiment_analyzer_url + "analyze/" + text
     try:
-        # Call get method of requests library with URL and parameters
         response = requests.get(request_url)
         return response.json()
     except Exception as err:

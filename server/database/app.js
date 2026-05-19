@@ -11,8 +11,11 @@ app.use(require('body-parser').urlencoded({ extended: false }));
 const reviews_data = JSON.parse(fs.readFileSync("./data/reviews.json", 'utf8'));
 const dealerships_data = JSON.parse(fs.readFileSync("./data/dealerships.json", 'utf8'));
 
-mongoose.connect("mongodb://mongo_db:27017/",{'dbName':'dealershipsDB'});
-
+// التعديل الجوهري: ربط التطبيق بسيرفر MongoDB الفعلي للمختبر بدلاً من المحلي المتوقف
+const mongoURI = "mongodb://root:2CSucCzBvnEvFwJCc1XWcB6V@172.21.123.190:27017/?authSource=admin";
+mongoose.connect(mongoURI, {'dbName': 'dealershipsDB'})
+  .then(() => console.log("MongoDB Connected Successfully via Remote URI"))
+  .catch(err => console.error("MongoDB Connection Error:", err));
 
 const Reviews = require('./review');
 const Dealerships = require('./dealership');
@@ -28,7 +31,6 @@ try {
 } catch (error) {
   console.error('Error seeding database:', error);
 }
-
 
 // Express route to home
 app.get('/', async (req, res) => {
@@ -78,7 +80,6 @@ app.get('/fetchDealers/:state', async (req, res) => {
 // Express route to fetch dealer by a particular id
 app.get('/fetchDealer/:id', async (req, res) => {
   try {
-    // نستخدم findOne أو نفلتر بـ id المعطى في ملف JSON
     const document = await Dealerships.findOne({ id: req.params.id });
     res.json(document);
   } catch (error) {
