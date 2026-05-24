@@ -10,37 +10,42 @@ from .restapis import get_request, analyze_review_sentiments, post_review
 
 logger = logging.getLogger(__name__)
 
+
 @csrf_exempt
 def add_review(request):
-    if(request.user.is_anonymous == False):
+    if not request.user.is_anonymous:
         data = json.loads(request.body)
         try:
             post_review(data)
             return JsonResponse({"status": 200})
         except Exception as e:
             logger.error(f"Error in posting review: {e}")
-            return JsonResponse({"status": 401, "message": "Error in posting review"})
+            return JsonResponse(
+                {"status": 401, "message": "Error in posting review"})
     else:
         return JsonResponse({"status": 403, "message": "Unauthorized"})
 
+
 def get_dealerships(request, state="All"):
-    if(state == "All"):
+    if state == "All":
         endpoint = "/fetchDealers"
     else:
         endpoint = "/fetchDealers/" + state
-    dealerships = get_request(endpoint)
-    return JsonResponse({"status": 200, "dealers": dealerships})
+    dealership = get_request(endpoint)
+    return JsonResponse({"status": 200, "dealers": dealership})
+
 
 def get_dealer_details(request, dealer_id):
-    if(dealer_id):
+    if dealer_id:
         endpoint = "/fetchDealer/" + str(dealer_id)
         dealership = get_request(endpoint)
         return JsonResponse({"status": 200, "dealer": dealership})
     else:
         return JsonResponse({"status": 400, "message": "Bad Request"})
 
+
 def get_dealer_reviews(request, dealer_id):
-    if(dealer_id):
+    if dealer_id:
         endpoint = "/fetchReviews/dealer/" + str(dealer_id)
         reviews = get_request(endpoint)
         for review_detail in reviews:
@@ -49,6 +54,7 @@ def get_dealer_reviews(request, dealer_id):
         return JsonResponse({"status": 200, "reviews": reviews})
     else:
         return JsonResponse({"status": 400, "message": "Bad Request"})
+
 
 @csrf_exempt
 def login_user(request):
@@ -62,20 +68,24 @@ def login_user(request):
         data = {"userName": username, "status": "Authenticated"}
     return JsonResponse(data)
 
+
 def get_cars(request):
     count = CarMake.objects.filter().count()
-    if(count == 0):
+    if count == 0:
         initiate()
     car_models = CarModel.objects.select_related('car_make')
     cars = []
     for car_model in car_models:
-        cars.append({"CarModel": car_model.name, "CarMake": car_model.car_make.name})
+        cars.append({"CarModel": car_model.name,
+                     "CarMake": car_model.car_make.name})
     return JsonResponse({"CarModels": cars})
-    
+
+
 def logout_request(request):
     logout(request)
     data = {"userName": ""}
     return JsonResponse(data)
+
 
 @csrf_exempt
 def registration(request):
@@ -94,13 +104,16 @@ def registration(request):
 
     if not username_exists:
         user = User.objects.create_user(
-            username=username, 
-            first_name=first_name, 
-            last_name=last_name, 
-            password=password, 
+            username=username,
+            first_name=first_name,
+            last_name=last_name,
+            password=password,
             email=email
         )
         login(request, user)
         return JsonResponse({"userName": username, "status": "Authenticated"})
     else:
-        return JsonResponse({"userName": username, "error": "Already Registered"})
+        return JsonResponse(
+            {"userName": username, "error": "Already Registered"})
+
+# End of views file

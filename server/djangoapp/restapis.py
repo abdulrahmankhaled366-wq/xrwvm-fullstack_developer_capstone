@@ -4,10 +4,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# تم تثبيت الرابط المحلي هنا مباشرة لضمان الاتصال السريع وتخطي مشاكل البروكسي الخارجي
+# تم تثبيت الرابط المحلي هنا مباشرة لضمان الاتصال السريع وتخطي مشاكل
+# البروكسي الخارجي
 backend_url = "http://localhost:3030"
 sentiment_analyzer_url = os.getenv(
     'sentiment_analyzer_url', default="http://localhost:5000/")
+
 
 def get_request(endpoint, **kwargs):
     params = ""
@@ -27,6 +29,7 @@ def get_request(endpoint, **kwargs):
     except Exception as err:
         print(f"Network exception occurred: {err}")
 
+
 def analyze_review_sentiments(text):
     request_url = sentiment_analyzer_url + "analyze/" + text
     try:
@@ -35,6 +38,7 @@ def analyze_review_sentiments(text):
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
         print("Network exception occurred")
+
 
 def post_review(data_dict):
     request_url = backend_url + "/insert_review"
